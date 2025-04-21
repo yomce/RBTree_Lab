@@ -1,5 +1,7 @@
 #include "rbtree.h"
 
+#include <stdio.h>
+
 #include <stdlib.h>
 
 rbtree *new_rbtree(void) {
@@ -40,5 +42,36 @@ int rbtree_erase(rbtree *t, node_t *p) {
 
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
+  return 0;
+}
+
+void print_tree(rbtree *t, node_t* node){
+  if(node == t->nil) return;
+  printf("%d, %s, parent = %d\n", node->key, node->color == RBTREE_BLACK ? "BLACK" : "RED", node->parent->key);
+  print_tree(t, node->left);
+  print_tree(t, node->right);
+}
+int main() {
+  rbtree *t = new_rbtree();
+  //10, 5, 8, 34, 67, 23, 156, 24, 2, 12
+  rbtree_insert(t, 10);
+  rbtree_insert(t, 5);
+  rbtree_insert(t, 8);
+  rbtree_insert(t, 34);
+  rbtree_insert(t, 67);
+  rbtree_insert(t, 23);
+  rbtree_insert(t, 156);
+  rbtree_insert(t, 24);
+  rbtree_insert(t, 2);
+  rbtree_insert(t, 12);
+  // 중위 순회 출력으로 key 정렬 확인
+  // node_t* cur = t->root;
+  // printf("Root: %d, Color: %s\n", cur->key, cur->color == RBTREE_BLACK ? "BLACK" : "RED");
+  // printf("Left: %d, Right: %d\n", cur->left->key, cur->right->key);
+  // if (cur->left != t->nil)
+  //   printf("Left: %d\n", cur->left->key);
+  // if (cur->right != t->nil)
+  // printf("Right: %d\n", cur->right->key);
+  print_tree(t, t->root);
   return 0;
 }
