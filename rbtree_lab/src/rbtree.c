@@ -86,42 +86,6 @@ void right_rotate(rbtree *t, node_t *y) {
   y->parent = x;
 }
 
-node_t *rbtree_insert(rbtree *t, const key_t key) {
-  node_t *z = (node_t *)malloc(sizeof(node_t)); // 새 노드 z를 생성
-  z->key = key;
-  z->left = t->nil;
-  z->right = t->nil;
-  z->color = RBTREE_RED;
-
-  node_t *x = t->root;   // x는 트리를 탐색하며 내려가는 현재 노드
-  node_t *y = t->nil;    // y는 z의 부모 노드
-
-  while (x != t->nil) {  // 리프까지 내려가며 삽입 위치 탐색
-    y = x;
-    if (z->key < x->key) {
-      x = x->left;
-    } else {
-      x = x->right;
-    }
-  }
-
-  z->parent = y;         // z의 부모를 y로 설정
-
-  if (y == t->nil) {
-    t->root = z;         // 트리가 비어있다면 z가 루트
-  } else if (z->key < y->key) {
-    y->left = z;
-  } else {
-    y->right = z;
-  }
-
-  // 삽입된 노드는 항상 RED로 시작 (위에서 설정됨)
-  // 왼쪽, 오른쪽 자식은 이미 t->nil로 설정됨
-
-  rbtree_insert_fixup(t, z);  // 특성 위반을 수정하기 위한 fixup 호출
-  return z;                   // 삽입된 노드를 반환
-}
-
 void rbtree_insert_fixup(rbtree *t, node_t *z) {
   while (z->parent->color == RBTREE_RED) {  // Case 1, 2, 3에 해당하는 반복 조건
     if (z->parent == z->parent->parent->left) {  // z의 부모가 조부모의 왼쪽 자식인 경우
@@ -168,6 +132,42 @@ void rbtree_insert_fixup(rbtree *t, node_t *z) {
     }
   }
   t->root->color = RBTREE_BLACK;  // 루트는 항상 BLACK이어야 함
+}
+
+node_t *rbtree_insert(rbtree *t, const key_t key) {
+  node_t *z = (node_t *)malloc(sizeof(node_t)); // 새 노드 z를 생성
+  z->key = key;
+  z->left = t->nil;
+  z->right = t->nil;
+  z->color = RBTREE_RED;
+
+  node_t *x = t->root;   // x는 트리를 탐색하며 내려가는 현재 노드
+  node_t *y = t->nil;    // y는 z의 부모 노드
+
+  while (x != t->nil) {  // 리프까지 내려가며 삽입 위치 탐색
+    y = x;
+    if (z->key < x->key) {
+      x = x->left;
+    } else {
+      x = x->right;
+    }
+  }
+
+  z->parent = y;         // z의 부모를 y로 설정
+
+  if (y == t->nil) {
+    t->root = z;         // 트리가 비어있다면 z가 루트
+  } else if (z->key < y->key) {
+    y->left = z;
+  } else {
+    y->right = z;
+  }
+
+  // 삽입된 노드는 항상 RED로 시작 (위에서 설정됨)
+  // 왼쪽, 오른쪽 자식은 이미 t->nil로 설정됨
+
+  rbtree_insert_fixup(t, z);  // 특성 위반을 수정하기 위한 fixup 호출
+  return z;                   // 삽입된 노드를 반환
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
