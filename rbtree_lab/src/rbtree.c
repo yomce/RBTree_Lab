@@ -24,9 +24,22 @@ rbtree *new_rbtree(void) {
   return p;
 }
 
+// 후위 순회로 모든 노드 메모리 해제
+void delete_node(node_t *node, node_t *nil) {
+  if (node == nil) return;  // nil은 트리의 끝 (리프 역할)
+
+  delete_node(node->left, nil);   // 왼쪽 서브트리
+  delete_node(node->right, nil);  // 오른쪽 서브트리
+  free(node);                     // 현재 노드
+}
+
+// 전체 트리 삭제 함수
 void delete_rbtree(rbtree *t) {
-  // TODO: reclaim the tree nodes's memory
-  free(t);
+  if (t == NULL) return;
+
+  delete_node(t->root, t->nil);  // 루트부터 후위 순회로 삭제
+  free(t->nil);                  // sentinel node 해제
+  free(t);                       // 트리 구조체 해제
 }
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
