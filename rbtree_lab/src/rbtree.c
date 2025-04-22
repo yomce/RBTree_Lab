@@ -54,14 +54,40 @@ void left_rotate(rbtree *t, node_t *x) {
 
   if (x->parent == t->nil) {         // 6. x가 루트인 경우
     t->root = y;                     // 7. y가 트리의 새로운 루트가 됨
-  } else if (x == x->parent->left) { // 8. x가 부모의 왼쪽 자식인 경우
+  } 
+  else if (x == x->parent->left) { // 8. x가 부모의 왼쪽 자식인 경우
     x->parent->left = y;             // 9. y가 왼쪽 자식이 됨
-  } else {                           // 10. x가 오른쪽 자식인 경우
+  } 
+  else {                           // 10. x가 오른쪽 자식인 경우
     x->parent->right = y;            //     y가 오른쪽 자식이 됨
   }
 
   y->left = x;                       // 11. x를 y의 왼쪽 자식으로 설정
   x->parent = y;                     // 12. x의 부모를 y로 설정
+}
+
+void right_rotate(rbtree *t, node_t *y) {
+  node_t *x = y->left;
+  y->left = x->right;
+
+  if (x->right != t->nil) {
+    x->right->parent = y;
+  }
+
+  x->parent = y->parent;
+
+  if (y->parent == t->nil) {
+    t->root = x;
+  }  
+  else if (y == y->parent->left) {
+      y->parent->left = x;
+  }
+  else {
+    y->parent->right = x;
+  }
+
+  x->left = y;
+  y->parent = x;
 }
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
