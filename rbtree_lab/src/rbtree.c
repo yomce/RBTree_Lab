@@ -6,7 +6,21 @@
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
-  // TODO: initialize struct if needed
+  node_t *nil_node = (node_t *)calloc(1, sizeof(node_t)); 
+  // 트리 구조체 sentinel node(nil) 메모리 할당
+
+  // sentinel은 항상 BLACK이며, 자식과 부모는 NULL로 설정
+  nil_node->color = RBTREE_BLACK;
+  nil_node->left = nil_node;
+  nil_node->right = nil_node;
+  nil_node->parent = nil_node;
+
+  // tree 구조체에 sentinel 설정
+  p->nil = nil_node;
+
+  // 초기에는 root도 nil을 가리킴 (비어있는 트리 상태)
+  p->root = p->nil;
+
   return p;
 }
 
