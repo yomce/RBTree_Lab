@@ -42,6 +42,28 @@ void delete_rbtree(rbtree *t) {
   free(t);                       // 트리 구조체 해제
 }
 
+void left_rotate(rbtree *t, node_t *x) {
+  node_t *y = x->right;               // 1. y는 x의 오른쪽 자식
+  x->right = y->left;                 // 2. y의 왼쪽 서브트리를 x의 오른쪽으로 이동
+
+  if (y->left != t->nil) {           // 3. y의 왼쪽 서브트리가 존재하면
+    y->left->parent = x;             // 4. 그 서브트리의 부모를 x로 설정
+  }
+
+  y->parent = x->parent;             // 5. y의 부모를 x의 부모로 설정
+
+  if (x->parent == t->nil) {         // 6. x가 루트인 경우
+    t->root = y;                     // 7. y가 트리의 새로운 루트가 됨
+  } else if (x == x->parent->left) { // 8. x가 부모의 왼쪽 자식인 경우
+    x->parent->left = y;             // 9. y가 왼쪽 자식이 됨
+  } else {                           // 10. x가 오른쪽 자식인 경우
+    x->parent->right = y;            //     y가 오른쪽 자식이 됨
+  }
+
+  y->left = x;                       // 11. x를 y의 왼쪽 자식으로 설정
+  x->parent = y;                     // 12. x의 부모를 y로 설정
+}
+
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
   return t->root;
