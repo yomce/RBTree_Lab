@@ -54,11 +54,9 @@ void left_rotate(rbtree *t, node_t *x) {
 
   if (x->parent == t->nil) {         // 6. x가 루트인 경우
     t->root = y;                     // 7. y가 트리의 새로운 루트가 됨
-  } 
-  else if (x == x->parent->left) { // 8. x가 부모의 왼쪽 자식인 경우
+  } else if (x == x->parent->left) { // 8. x가 부모의 왼쪽 자식인 경우
     x->parent->left = y;             // 9. y가 왼쪽 자식이 됨
-  } 
-  else {                           // 10. x가 오른쪽 자식인 경우
+  } else {                           // 10. x가 오른쪽 자식인 경우
     x->parent->right = y;            //     y가 오른쪽 자식이 됨
   }
 
@@ -78,11 +76,9 @@ void right_rotate(rbtree *t, node_t *y) {
 
   if (y->parent == t->nil) {
     t->root = x;
-  }  
-  else if (y == y->parent->left) {
+  } else if (y == y->parent->left) {
       y->parent->left = x;
-  }
-  else {
+  } else {
     y->parent->right = x;
   }
 
@@ -91,8 +87,87 @@ void right_rotate(rbtree *t, node_t *y) {
 }
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
-  // TODO: implement insert
-  return t->root;
+  node_t *z = (node_t *)malloc(sizeof(node_t)); // 새 노드 z를 생성
+  z->key = key;
+  z->left = t->nil;
+  z->right = t->nil;
+  z->color = RBTREE_RED;
+
+  node_t *x = t->root;   // x는 트리를 탐색하며 내려가는 현재 노드
+  node_t *y = t->nil;    // y는 z의 부모 노드
+
+  while (x != t->nil) {  // 리프까지 내려가며 삽입 위치 탐색
+    y = x;
+    if (z->key < x->key) {
+      x = x->left;
+    } else {
+      x = x->right;
+    }
+  }
+
+  z->parent = y;         // z의 부모를 y로 설정
+
+  if (y == t->nil) {
+    t->root = z;         // 트리가 비어있다면 z가 루트
+  } else if (z->key < y->key) {
+    y->left = z;
+  } else {
+    y->right = z;
+  }
+
+  // 삽입된 노드는 항상 RED로 시작 (위에서 설정됨)
+  // 왼쪽, 오른쪽 자식은 이미 t->nil로 설정됨
+
+  rbtree_insert_fixup(t, z);  // 특성 위반을 수정하기 위한 fixup 호출
+  return z;                   // 삽입된 노드를 반환
+}
+
+void rbtree_insert_fixup(rbtree *t, node_t *z) {
+  while (z->parent->color == RBTREE_RED) {  // Case 1, 2, 3에 해당하는 반복 조건
+    if (z->parent == z->parent->parent->left) {  // z의 부모가 조부모의 왼쪽 자식인 경우
+      node_t *y = z->parent->parent->right;      // y는 삼촌 노드 (오른쪽 자식)
+
+      if (y->color == RBTREE_RED) {
+        // Case 1: 부모와 삼촌 모두 RED인 경우
+        z->parent->color = RBTREE_BLACK;
+        y->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        z = z->parent->parent;  // z를 조부모로 올려서 반복
+      } else {
+        if (z == z->parent->right) {
+          // Case 2: z가 오른쪽 자식이면 왼쪽 회전 필요
+          z = z->parent;
+          left_rotate(t, z);
+        }
+        // Case 3: 부모는 RED, 삼촌은 BLACK, z는 왼쪽 자식
+        z->parent->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        right_rotate(t, z->parent->parent);
+      }
+
+    } else {  // 부모가 조부모의 오른쪽 자식인 경우 (위의 대칭)
+      node_t *y = z->parent->parent->left;  // 삼촌 노드는 왼쪽 자식
+
+      if (y->color == RBTREE_RED) {
+        // Case 1 (대칭)
+        z->parent->color = RBTREE_BLACK;
+        y->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        z = z->parent->parent;
+      } else {
+        if (z == z->parent->left) {
+          // Case 2 (대칭)
+          z = z->parent;
+          right_rotate(t, z);
+        }
+        // Case 3 (대칭)
+        z->parent->color = RBTREE_BLACK;
+        z->parent->parent->color = RBTREE_RED;
+        left_rotate(t, z->parent->parent);
+      }
+    }
+  }
+  t->root->color = RBTREE_BLACK;  // 루트는 항상 BLACK이어야 함
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
