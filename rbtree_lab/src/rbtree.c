@@ -208,8 +208,60 @@ node_t *rbtree_max(const rbtree *t) {
   return cur;
 }
 
-int rbtree_erase(rbtree *t, node_t *p) {
-  // TODO: implement erase
+node_t *tree_minimum(rbtree *t, node_t *x) {
+  while (x->left != t->nil) {
+    x = x->left;
+  }
+  return x;
+}
+
+void rbtree_transplant(rbtree *t, node_t *u, node_t *v) {
+  if (u->parent == t->nil) {
+    t->root = v;
+  } else if (u == u->parent->left) {
+    u->parent->left = v;
+  } else {
+    u->parent->right = v;
+  }
+  v->parent = u->parent;
+}
+
+int rbtree_erase(rbtree *t, node_t *z) {
+  node_t *y = z;
+  node_t *x;
+  color_t y_original_color = y->color;
+
+  if (z->left == t->nil) {
+    x = z->right;
+    rbtree_transplant(t, z, z->right);
+  } else if (z->right == t->nil) {
+    x = z->left;
+    rbtree_transplant(t, z, z->left);
+  } else {
+    y = tree_minimum(t, z->right);  // z의 후계자 y
+    y_original_color = y->color;
+    x = y->right;
+
+    if (y->parent != z) {
+      rbtree_transplant(t, y, y->right);
+      y->right = z->right;
+      y->right->parent = y;
+    } else {
+      x->parent = y;  // x가 nil일 경우에도 부모 설정
+    }
+
+    rbtree_transplant(t, z, y);
+    y->left = z->left;
+    y->left->parent = y;
+    y->color = z->color;
+  }
+
+  free(z);  // 삭제된 노드 메모리 해제
+
+  if (y_original_color == RBTREE_BLACK) {
+    rbtree_delete_fixup(t, x); 
+  }
+
   return 0;
 }
 
