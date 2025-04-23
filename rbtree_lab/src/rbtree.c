@@ -188,32 +188,42 @@ node_t *rbtree_find(const rbtree *t, const key_t key) {
   return NULL;
 }
 
-// node_t *rbtree_min(const rbtree *t) {
-//   // TODO: implement find
-//   return t->root;
-// }
+node_t *rbtree_min(const rbtree *t) {
+  node_t *cur = t->root;
+  if (cur == t->nil) return NULL;  // 트리가 비어있다면 NULL 반환
 
-// node_t *rbtree_max(const rbtree *t) {
-//   // TODO: implement find
-//   return t->root;
-// }
+  while (cur->left != t->nil) {
+    cur = cur->left;
+  }
+  return cur;
+}
 
-// int rbtree_erase(rbtree *t, node_t *p) {
-//   // TODO: implement erase
-//   return 0;
-// }
+node_t *rbtree_max(const rbtree *t) {
+  node_t *cur = t->root;
+  if (cur == t->nil) return NULL;  // 트리가 비어있다면 NULL 반환
 
-// int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
-//   // TODO: implement to_array
-//   return 0;
-// }
+  while (cur->right != t->nil) {
+    cur = cur->right;
+  }
+  return cur;
+}
 
-// void print_tree(rbtree *t, node_t* node){
-//   if(node == t->nil) return;
-//   printf("%d, %s, parent = %d\n", node->key, node->color == RBTREE_BLACK ? "BLACK" : "RED", node->parent->key);
-//   print_tree(t, node->left);
-//   print_tree(t, node->right);
-// }
+int rbtree_erase(rbtree *t, node_t *p) {
+  // TODO: implement erase
+  return 0;
+}
+
+int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
+  // TODO: implement to_array
+  return 0;
+}
+
+void print_tree(rbtree *t, node_t* node){
+  if(node == t->nil) return;
+  printf("%d, %s, parent = %d\n", node->key, node->color == RBTREE_BLACK ? "BLACK" : "RED", node->parent->key);
+  print_tree(t, node->left);
+  print_tree(t, node->right);
+}
 // int main() {
 //   rbtree *t = new_rbtree();
 //   //10, 5, 8, 34, 67, 23, 156, 24, 2, 12
