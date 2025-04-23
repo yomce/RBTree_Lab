@@ -171,8 +171,21 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
-  // TODO: implement find
-  return t->root;
+  node_t *cur = t->root;
+
+  // 트리를 순회하면서 key를 탐색
+  while (cur != t->nil) {
+    if (key == cur->key) {
+      return cur;  // key를 찾은 경우 해당 노드 반환
+    } else if (key < cur->key) {
+      cur = cur->left;  // key가 작으면 왼쪽 서브트리 탐색
+    } else {
+      cur = cur->right; // key가 크면 오른쪽 서브트리 탐색
+    }
+  }
+
+  // 끝까지 탐색해도 없으면 NULL 반환
+  return NULL;
 }
 
 node_t *rbtree_min(const rbtree *t) {
