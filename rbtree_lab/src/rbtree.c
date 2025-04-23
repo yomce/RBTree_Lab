@@ -135,7 +135,12 @@ void rbtree_insert_fixup(rbtree *t, node_t *z) {
 }
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
+  printf("🔧 [insert] trying key = %d\n", key);
   node_t *z = (node_t *)malloc(sizeof(node_t)); // 새 노드 z를 생성
+  if (z == NULL) {
+    printf("❗ malloc failed for key = %d\n", key);
+    return NULL;  // malloc 실패 방지
+  }  
   z->key = key;
   z->left = t->nil;
   z->right = t->nil;
@@ -146,7 +151,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
   while (x != t->nil) {  // 리프까지 내려가며 삽입 위치 탐색
     y = x;
-    if (z->key < x->key) {
+    if (key <= x->key) {
       x = x->left;
     } else {
       x = x->right;
@@ -154,12 +159,22 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   }
 
   z->parent = y;         // z의 부모를 y로 설정
+  printf("✅ [insert] parent key = %d\n", y != t->nil ? y->key : -9999);
+
+  if (z == z->parent) {
+    printf("❗ 자기 자신을 부모로 참조하려 함! key = %d\n", key);
+    free(z);
+    return NULL; // 방어적 처리
+  }
 
   if (y == t->nil) {
+    printf("🌱 [insert] new root = %d\n", z->key);
     t->root = z;         // 트리가 비어있다면 z가 루트
-  } else if (z->key < y->key) {
+  } else if (z->key <= y->key) {
+    printf("⬅️  [insert] %d inserted to left of %d\n", z->key, y->key);
     y->left = z;
   } else {
+    printf("➡️  [insert] %d inserted to right of %d\n", z->key, y->key);
     y->right = z;
   }
 
@@ -356,33 +371,33 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   return 0;
 }
 
-void print_tree(rbtree *t, node_t* node){
-  if(node == t->nil) return;
-  printf("%d, %s, parent = %d\n", node->key, node->color == RBTREE_BLACK ? "BLACK" : "RED", node->parent->key);
-  print_tree(t, node->left);
-  print_tree(t, node->right);
-}
-int main() {
-  rbtree *t = new_rbtree();
-  //10, 5, 8, 34, 67, 23, 156, 24, 2, 12
-  rbtree_insert(t, 10);
-  rbtree_insert(t, 5);
-  rbtree_insert(t, 8);
-  rbtree_insert(t, 34);
-  rbtree_insert(t, 67);
-  rbtree_insert(t, 23);
-  rbtree_insert(t, 156);
-  rbtree_insert(t, 24);
-  rbtree_insert(t, 2);
-  rbtree_insert(t, 12);
-  // 중위 순회 출력으로 key 정렬 확인
-  // node_t* cur = t->root;
-  // printf("Root: %d, Color: %s\n", cur->key, cur->color == RBTREE_BLACK ? "BLACK" : "RED");
-  // printf("Left: %d, Right: %d\n", cur->left->key, cur->right->key);
-  // if (cur->left != t->nil)
-  //   printf("Left: %d\n", cur->left->key);
-  // if (cur->right != t->nil)
-  // printf("Right: %d\n", cur->right->key);
-  print_tree(t, t->root);
-  return 0;
-}
+// void print_tree(rbtree *t, node_t* node){
+//   if(node == t->nil) return;
+//   printf("%d, %s, parent = %d\n", node->key, node->color == RBTREE_BLACK ? "BLACK" : "RED", node->parent->key);
+//   print_tree(t, node->left);
+//   print_tree(t, node->right);
+// }
+// int main() {
+//   rbtree *t = new_rbtree();
+//   //10, 5, 8, 34, 67, 23, 156, 24, 2, 12
+//   rbtree_insert(t, 10);
+//   rbtree_insert(t, 5);
+//   rbtree_insert(t, 8);
+//   rbtree_insert(t, 34);
+//   rbtree_insert(t, 67);
+//   rbtree_insert(t, 23);
+//   rbtree_insert(t, 156);
+//   rbtree_insert(t, 24);
+//   rbtree_insert(t, 2);
+//   rbtree_insert(t, 12);
+//   // 중위 순회 출력으로 key 정렬 확인
+//   // node_t* cur = t->root;
+//   // printf("Root: %d, Color: %s\n", cur->key, cur->color == RBTREE_BLACK ? "BLACK" : "RED");
+//   // printf("Left: %d, Right: %d\n", cur->left->key, cur->right->key);
+//   // if (cur->left != t->nil)
+//   //   printf("Left: %d\n", cur->left->key);
+//   // if (cur->right != t->nil)
+//   // printf("Right: %d\n", cur->right->key);
+//   print_tree(t, t->root);
+//   return 0;
+// }

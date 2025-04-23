@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SENTINEL
+// #define SENTINEL
 
 // new_rbtree should return rbtree struct with null root node
 void test_init(void)
@@ -354,7 +354,11 @@ void test_find_erase(rbtree *t, const key_t *arr, const size_t n)
 {
   for (int i = 0; i < n; i++)
   {
+    printf("[test] inserting arr[%d] = %d\n", i, arr[i]);  // 👈 어디서 실패하는지 보기
     node_t *p = rbtree_insert(t, arr[i]);
+    if (p == NULL) {
+      printf("❌ insert returned NULL for key = %d\n", arr[i]);  // 👈 어떤 key에서 실패하는지
+    }
     assert(p != NULL);
   }
 
